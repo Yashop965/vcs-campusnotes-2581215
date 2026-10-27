@@ -59,5 +59,25 @@ class NotesAppTest(unittest.TestCase):
         self.assertTrue(os.path.exists(self.path + ".corrupt"))
 
 
+    def test_add_note_with_tags(self):
+        self.app.add("Python", "Study basics", tags=["programming", "exam"])
+        note = self.app.notes["Python"]
+        self.assertEqual(note["tags"], ["programming", "exam"])
+
+    def test_list_unique_tags(self):
+        self.app.add("Python", "Basics", tags=["exam", "programming"])
+        self.app.add("Git", "Commands", tags=["exam"])
+        self.assertEqual(self.app.list_tags(), ["exam", "programming"])
+
+    def test_filter_notes_by_tag(self):
+        self.app.add("Python", "Basics", tags=["programming"])
+        self.app.add("Git", "Commands", tags=["tools"])
+        results = self.app.by_tag("PROGRAMMING")
+        self.assertEqual([note["title"] for note in results], ["Python"])
+
+    def test_old_notes_without_tags(self):
+        self.app.add("Python", "Basics")
+        self.assertEqual(self.app.notes["Python"]["tags"], [])
+
 if __name__ == "__main__":
     unittest.main()
